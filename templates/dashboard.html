@@ -5,49 +5,128 @@
   <title>Dashboard - Visitor Management System</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css') }}">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
 </head>
 <body>
   <!-- Navigation -->
-  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow">
     <div class="container">
-      <a class="navbar-brand" href="/dashboard">Visitor Management</a>
+      <a class="navbar-brand fw-bold" href="/dashboard">
+        <i data-feather="home"></i> Visitor Management
+      </a>
       <div class="collapse navbar-collapse">
         <ul class="navbar-nav ms-auto">
-          <li class="nav-item"><a class="nav-link" href="/dashboard">Dashboard</a></li>
-          <li class="nav-item"><a class="nav-link" href="/visitors">Visitors</a></li>
-          <li class="nav-item"><a class="nav-link" href="/analytics">Analytics</a></li>
-          <li class="nav-item"><a class="nav-link" href="/logout">Logout</a></li>
+          <li class="nav-item"><a class="nav-link" href="/dashboard"><i data-feather="grid"></i> Dashboard</a></li>
+          <li class="nav-item"><a class="nav-link" href="/visitors"><i data-feather="users"></i> Visitors</a></li>
+          <li class="nav-item"><a class="nav-link" href="/analytics"><i data-feather="bar-chart-2"></i> Analytics</a></li>
+          <li class="nav-item"><a class="nav-link" href="/logout"><i data-feather="log-out"></i> Logout</a></li>
         </ul>
       </div>
     </div>
   </nav>
-  
+
+  <!-- Dashboard Section -->
   <div class="container mt-4">
-    <h1>Dashboard</h1>
+    <h1 class="text-center fw-bold mb-4">Admin Dashboard</h1>
+    
     <div class="row">
-      <div class="col-md-6">
-        <div class="card text-white bg-primary mb-3">
+      <!-- Total Visitors -->
+      <div class="col-md-4">
+        <div class="card text-white bg-primary shadow rounded-3">
           <div class="card-body">
-            <h5 class="card-title">Total Visitors</h5>
-            <p class="card-text display-4">{{ total_visitors }}</p>
+            <div class="d-flex align-items-center">
+              <div class="me-3">
+                <i data-feather="user-check" class="display-4"></i>
+              </div>
+              <div>
+                <h5 class="card-title">Total Visitors</h5>
+                <p class="card-text fs-2">{{ total_visitors }}</p>
+              </div>
+            </div>
           </div>
         </div>
       </div>
-      <div class="col-md-6">
-        <div class="card text-white bg-success mb-3">
+
+      <!-- Today's Visitors -->
+      <div class="col-md-4">
+        <div class="card text-white bg-success shadow rounded-3">
           <div class="card-body">
-            <h5 class="card-title">Today's Visitors</h5>
-            <p class="card-text display-4">{{ today_count }}</p>
+            <div class="d-flex align-items-center">
+              <div class="me-3">
+                <i data-feather="calendar" class="display-4"></i>
+              </div>
+              <div>
+                <h5 class="card-title">Today's Visitors</h5>
+                <p class="card-text fs-2">{{ today_count }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Actions -->
+      <div class="col-md-4">
+        <div class="card text-white bg-warning shadow rounded-3">
+          <div class="card-body">
+            <div class="d-flex align-items-center">
+              <div class="me-3">
+                <i data-feather="zap" class="display-4"></i>
+              </div>
+              <div>
+                <h5 class="card-title">Quick Actions</h5>
+                <a href="/visitor/add" class="btn btn-light btn-sm"><i data-feather="plus-circle"></i> Add Visitor</a>
+                <a href="/visitors" class="btn btn-light btn-sm"><i data-feather="list"></i> View Visitors</a>
+              </div>
+            </div>
           </div>
         </div>
       </div>
     </div>
-    <div class="mb-3">
-      <a href="/visitor/add" class="btn btn-primary">Add Visitor</a>
-      <a href="/visitors" class="btn btn-secondary">Manage Visitors</a>
+
+    <!-- Latest Visitors Table -->
+    <div class="mt-5">
+      <h2 class="mb-3"><i data-feather="clock"></i> Recent Visitors</h2>
+      <div class="table-responsive">
+        <table class="table table-hover table-striped table-bordered">
+          <thead class="table-dark">
+            <tr>
+              <th>ID</th>
+              <th>Name</th>
+              <th>Phone</th>
+              <th>Apartment</th>
+              <th>Purpose</th>
+              <th>Entry Time</th>
+              <th>Exit Time</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for visitor in visitors[:5] %}  <!-- Show only latest 5 visitors -->
+            <tr>
+              <td>{{ visitor.id }}</td>
+              <td>{{ visitor.name }}</td>
+              <td>{{ visitor.phone }}</td>
+              <td>{{ visitor.apartment }}</td>
+              <td>{{ visitor.purpose }}</td>
+              <td>{{ visitor.entry_time.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+              <td>
+                {% if visitor.exit_time %}
+                  {{ visitor.exit_time.strftime('%Y-%m-%d %H:%M:%S') }}
+                {% else %}
+                  <span class="badge bg-warning text-dark">Still In</span>
+                {% endif %}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
-  
+
+  <!-- Bootstrap & Feather Icons -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    feather.replace();  // Load Feather Icons
+  </script>
 </body>
 </html>

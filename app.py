@@ -81,7 +81,11 @@ def logout():
 def dashboard():
     total_visitors = Visitor.query.count()
     today_count = Visitor.query.filter(db.func.date(Visitor.entry_time) == date.today()).count()
-    return render_template('dashboard.html', total_visitors=total_visitors, today_count=today_count)
+    
+    # Fetch the 5 latest visitors to display in the dashboard table
+    visitors = Visitor.query.order_by(Visitor.entry_time.desc()).limit(5).all()
+    
+    return render_template('dashboard.html', total_visitors=total_visitors, today_count=today_count, visitors=visitors)
 
 # Visitor Management Routes
 
