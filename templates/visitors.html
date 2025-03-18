@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Visitor Records - Visitor Management System</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css') }}">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container">
+      <a class="navbar-brand" href="/dashboard">Visitor Management</a>
+      <div class="collapse navbar-collapse">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item"><a class="nav-link" href="/dashboard">Dashboard</a></li>
+          <li class="nav-item"><a class="nav-link" href="/visitors">Visitors</a></li>
+          <li class="nav-item"><a class="nav-link" href="/analytics">Analytics</a></li>
+          <li class="nav-item"><a class="nav-link" href="/logout">Logout</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+  
+  <div class="container mt-4">
+    <h1>Visitor Records</h1>
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Name</th>
+          <th>Phone</th>
+          <th>Apartment</th>
+          <th>Purpose</th>
+          <th>Entry Time</th>
+          <th>Exit Time</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for visitor in visitors %}
+        <tr>
+          <td>{{ visitor.id }}</td>
+          <td>{{ visitor.name }}</td>
+          <td>{{ visitor.phone }}</td>
+          <td>{{ visitor.apartment }}</td>
+          <td>{{ visitor.purpose }}</td>
+          <td>{{ visitor.entry_time.strftime("%Y-%m-%d %H:%M:%S") }}</td>
+          <td>
+            {% if visitor.exit_time %}
+              {{ visitor.exit_time.strftime("%Y-%m-%d %H:%M:%S") }}
+            {% else %}
+              Not checked out
+            {% endif %}
+          </td>
+          <td>
+            {% if not visitor.exit_time %}
+              <form method="POST" action="/visitor/checkout/{{ visitor.id }}">
+                <button type="submit" class="btn btn-warning btn-sm">Check Out</button>
+              </form>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
