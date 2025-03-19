@@ -3,15 +3,88 @@
 <head>
   <meta charset="UTF-8">
   <title>Visitor Records - Visitor Management System</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css') }}">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Bootstrap CSS -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  <!-- Google Fonts -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;700&display=swap">
+  <style>
+    /* Global Styles */
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: #f8f9fa;
+      margin: 0;
+      padding: 0;
+    }
+    /* Navbar */
+    .navbar {
+      background: #343a40;
+      padding: 1rem 2rem;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    }
+    .navbar-brand {
+      font-weight: 700;
+      font-size: 1.5rem;
+    }
+    /* Main Container */
+    .main-container {
+      margin-top: 3rem;
+    }
+    /* Card Style Container */
+    .card {
+      border: none;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      background-color: #ffffff;
+      padding: 2rem;
+      margin-bottom: 2rem;
+    }
+    /* Search Bar */
+    .search-bar {
+      margin-bottom: 1.5rem;
+    }
+    /* Table Styling */
+    .table thead th {
+      border-bottom: 2px solid #dee2e6;
+      background: #e9ecef;
+      font-weight: 500;
+    }
+    .table tbody tr {
+      transition: transform 0.2s ease, background-color 0.2s ease;
+    }
+    .table tbody tr:hover {
+      background-color: #f1f3f5;
+      transform: scale(1.01);
+    }
+    /* Buttons */
+    .btn-checkout {
+      background-color: #28a745;
+      border: none;
+      font-weight: 500;
+      transition: background-color 0.2s ease;
+    }
+    .btn-checkout:hover {
+      background-color: #218838;
+    }
+    /* Footer */
+    footer {
+      background-color: #343a40;
+      color: #fff;
+      text-align: center;
+      padding: 1rem 0;
+    }
+  </style>
 </head>
 <body>
-  <!-- Navigation -->
-  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark">
     <div class="container">
       <a class="navbar-brand" href="/dashboard">Visitor Management</a>
-      <div class="collapse navbar-collapse">
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" 
+              aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarContent">
         <ul class="navbar-nav ms-auto">
           <li class="nav-item"><a class="nav-link" href="/dashboard">Dashboard</a></li>
           <li class="nav-item"><a class="nav-link" href="/visitors">Visitors</a></li>
@@ -22,50 +95,67 @@
     </div>
   </nav>
   
-  <div class="container mt-4">
-    <h1>Visitor Records</h1>
-    <table class="table table-striped">
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Name</th>
-          <th>Phone</th>
-          <th>Apartment</th>
-          <th>Purpose</th>
-          <th>Entry Time</th>
-          <th>Exit Time</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for visitor in visitors %}
-        <tr>
-          <td>{{ visitor.id }}</td>
-          <td>{{ visitor.name }}</td>
-          <td>{{ visitor.phone }}</td>
-          <td>{{ visitor.apartment }}</td>
-          <td>{{ visitor.purpose }}</td>
-          <td>{{ visitor.entry_time.strftime("%Y-%m-%d %H:%M:%S") }}</td>
-          <td>
-            {% if visitor.exit_time %}
-              {{ visitor.exit_time.strftime("%Y-%m-%d %H:%M:%S") }}
-            {% else %}
-              Not checked out
-            {% endif %}
-          </td>
-          <td>
-            {% if not visitor.exit_time %}
-              <form method="POST" action="/visitor/checkout/{{ visitor.id }}">
-                <button type="submit" class="btn btn-warning btn-sm">Check Out</button>
-              </form>
-            {% endif %}
-          </td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
+  <!-- Main Content -->
+  <div class="container main-container">
+    <h1 class="text-center mb-4">Visitor Records</h1>
+    <div class="card">
+      <!-- Search Bar -->
+      <div class="search-bar">
+        <input type="text" class="form-control" placeholder="Search visitors...">
+      </div>
+      <div class="table-responsive">
+        <table class="table table-striped table-hover align-middle">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Name</th>
+              <th>Phone</th>
+              <th>Apartment</th>
+              <th>Purpose</th>
+              <th>Entry Time</th>
+              <th>Exit Time</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for visitor in visitors %}
+            <tr>
+              <td>{{ visitor.id }}</td>
+              <td>{{ visitor.name }}</td>
+              <td>{{ visitor.phone }}</td>
+              <td>{{ visitor.apartment }}</td>
+              <td>{{ visitor.purpose }}</td>
+              <td>{{ visitor.entry_time.strftime("%Y-%m-%d %H:%M:%S") }}</td>
+              <td>
+                {% if visitor.exit_time %}
+                  {{ visitor.exit_time.strftime("%Y-%m-%d %H:%M:%S") }}
+                {% else %}
+                  <span class="badge bg-warning text-dark">Not checked out</span>
+                {% endif %}
+              </td>
+              <td>
+                {% if not visitor.exit_time %}
+                  <form method="POST" action="/visitor/checkout/{{ visitor.id }}">
+                    <button type="submit" class="btn btn-checkout btn-sm">Check Out</button>
+                  </form>
+                {% endif %}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
   </div>
   
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      <p>&copy; 2025 Visitor Management System. All rights reserved.</p>
+    </div>
+  </footer>
+  
+  <!-- Bootstrap Bundle with Popper -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
