@@ -1,38 +1,127 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Analytics - Visitor Management System</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css') }}">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analytics | Visitor Management</title>
+
+    <!-- Bootstrap for styling -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+
+    <!-- Chart.js for interactive charts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        body {
+            background: #f4f6f9;
+        }
+        .container {
+            margin-top: 30px;
+        }
+        .card {
+            border-radius: 12px;
+            box-shadow: 2px 4px 8px rgba(0, 0, 0, 0.1);
+            background: white;
+            padding: 20px;
+        }
+        h2 {
+            text-align: center;
+            color: #333;
+            font-weight: bold;
+        }
+        canvas {
+            margin: 10px auto;
+        }
+        .dashboard-btn {
+            display: flex;
+            justify-content: center;
+            margin-top: 30px;
+        }
+    </style>
 </head>
 <body>
-  <!-- Navigation -->
-  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+
     <div class="container">
-      <a class="navbar-brand" href="/dashboard">Visitor Management</a>
-      <div class="collapse navbar-collapse">
-        <ul class="navbar-nav ms-auto">
-          <li class="nav-item"><a class="nav-link" href="/dashboard">Dashboard</a></li>
-          <li class="nav-item"><a class="nav-link" href="/visitors">Visitors</a></li>
-          <li class="nav-item"><a class="nav-link" href="/analytics">Analytics</a></li>
-          <li class="nav-item"><a class="nav-link" href="/logout">Logout</a></li>
-        </ul>
-      </div>
+        <h2>📊 Visitor Analytics Dashboard</h2>
+
+        <div class="row mt-4">
+            <!-- Bar Chart -->
+            <div class="col-md-6">
+                <div class="card">
+                    <h4 class="text-center">Visitors Per Apartment</h4>
+                    <canvas id="visitorBarChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Pie Chart -->
+            <div class="col-md-6">
+                <div class="card">
+                    <h4 class="text-center">Visitor Distribution</h4>
+                    <canvas id="visitorPieChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dashboard Button -->
+        <div class="dashboard-btn">
+            <a href="/dashboard" class="btn btn-primary btn-lg">⬅ Back to Dashboard</a>
+        </div>
+
     </div>
-  </nav>
-  
-  <div class="container mt-4">
-    <h1>Analytics</h1>
-    <div class="card">
-      <div class="card-body">
-        <canvas id="apartmentChart"></canvas>
-      </div>
-    </div>
-  </div>
-  
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="{{ url_for('static', filename='js/analytics.js') }}"></script>
+
+    <script>
+        fetch('/analytics/data')
+            .then(response => response.json())
+            .then(data => {
+                console.log("Analytics Data:", data);
+                if (data.apartments.length === 0) {
+                    alert("No visitor data available!");
+                    return;
+                }
+
+                let labels = data.apartments;
+                let values = data.counts;
+
+                // Bar Chart
+                let ctxBar = document.getElementById('visitorBarChart').getContext('2d');
+                new Chart(ctxBar, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Visitors',
+                            data: values,
+                            backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                            borderColor: 'rgba(54, 162, 235, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: { display: false }
+                        }
+                    }
+                });
+
+                // Pie Chart
+                let ctxPie = document.getElementById('visitorPieChart').getContext('2d');
+                new Chart(ctxPie, {
+                    type: 'pie',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Visitors',
+                            data: values,
+                            backgroundColor: [
+                                '#ff6384', '#36a2eb', '#ffce56', '#4bc0c0', '#9966ff', '#ff9f40'
+                            ]
+                        }]
+                    }
+                });
+            })
+            .catch(error => console.error("Error loading analytics data:", error));
+    </script>
+
 </body>
 </html>
